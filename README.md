@@ -9,3 +9,5 @@ This repository is used as:
 # Credits  
 
 Thanks to all of our fans.
+
+Goodbye.
