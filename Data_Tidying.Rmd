@@ -9,11 +9,11 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r, warning=FALSE, message=FALSE}
-library(dplyr)
+```{r}
 library(tidyr)
+library(dplyr)
 ```
-to call a funtion from a specific package 'package_name::function_name(...)
+To call a funtion from a specific package 'package_name::function_name(...) This is in the case of overlap in objects per the above error message
 
 # Data Cleaning
 ```{r}
@@ -24,6 +24,9 @@ head(catch_df)
 ```
 
 The above code allows reading in data from a url. `read.csv(file =)` sometimes doesnt work on windows, the above code fixes the error.
+
+`libcurl` forces the default library to make a connection with an https:// URL. Dependent on operating system.
+
 # Split-Apply-Combine
 
 # Joins
