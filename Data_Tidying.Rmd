@@ -2,7 +2,9 @@
 title: "Data Tidying"
 author: "Shayne O'Brien"
 date: "January 16, 2019"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -41,21 +43,24 @@ head(catch_df)
 ```{r}
 catch_long<- catch_df %>%
   select(Region, Year, Chinook, Sockeye, Coho, Pink, Chum) %>% 
-  gather(key = "Species", value = "Catch", Chinook, Sockeye, Coho, Pink, Chum)
+  gather(key = "Species", value = "catch", Chinook, Sockeye, Coho, Pink, Chum)
   
 
 head(catch_long)
 ```
 
+8erroneus value due to OCR issue - Change "I" to one
+*create catch column in correct units
 ```{r}
 catch_cleaned<-catch_long %>% 
-  rename(catch_thousands = Catch) # %>% 
-  #mutate
-  
+  rename(catch_thousands = catch)  %>% 
+  mutate(catch_thousands = ifelse(catch_thousands == "I", 1, catch_thousands)) %>% 
+  mutate(catch_thousands = as.integer(catch_thousands)) %>% 
+  mutate(catch = catch_thousands * as.integer(1000))
 
-head(catch_cleaned)
+tail(catch_cleaned)
 ```
-```{r}
+```{r eval = F, echo=FALSE}
 test_catch <- as.integer(catch_cleaned$catch_thousands)
 
 i<- which(is.na(test_catch) == T)
@@ -64,5 +69,16 @@ catch_cleaned[i, ]
 ```
 
 # Split-Apply-Combine
+Calulculate total catch by region
+
+```{r}
+catch_total <- catch_cleaned %>% 
+  group_by(Region) %>% 
+  summarize(catch_region = mean(catch))
+            #n_obs = n())
+
+catch_total
+```
+
 
 # Joins
