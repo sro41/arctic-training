@@ -24,7 +24,7 @@ To Hide, use `{r, warning= FALSE, message = False}`
 Use:
 [Ctrl+Shift+M]
 
-```
+
 ## Practice
 ```{r}
 catch_df<- read.csv(url("https://knb.ecoinformatics.org/knb/d1/mn/v2/object/df35b.302.1", 
@@ -39,16 +39,29 @@ head(catch_df)
 ```
 
 ```{r}
-catch_cleaned<- catch_df %>%
+catch_long<- catch_df %>%
   select(Region, Year, Chinook, Sockeye, Coho, Pink, Chum) %>% 
   gather(key = "Species", value = "Catch", Chinook, Sockeye, Coho, Pink, Chum)
   
 
-head(catch_cleaned)
+head(catch_long)
 ```
 
+```{r}
+catch_cleaned<-catch_long %>% 
+  rename(catch_thousands = Catch) # %>% 
+  #mutate
+  
 
+head(catch_cleaned)
+```
+```{r}
+test_catch <- as.integer(catch_cleaned$catch_thousands)
 
+i<- which(is.na(test_catch) == T)
+
+catch_cleaned[i, ]
+```
 
 # Split-Apply-Combine
 

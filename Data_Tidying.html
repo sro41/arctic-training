@@ -210,7 +210,9 @@ library(dplyr)</code></pre>
 <h2>Pipe Operator (<code>%&gt;%</code>)</h2>
 <p>The Pipe Operator effieciently chains operations together.</p>
 <p>Use: [Ctrl+Shift+M]</p>
-<p>``` ## Practice</p>
+</div>
+<div id="practice" class="section level2">
+<h2>Practice</h2>
 <pre class="r"><code>catch_df&lt;- read.csv(url(&quot;https://knb.ecoinformatics.org/knb/d1/mn/v2/object/df35b.302.1&quot;, 
                         method = &quot;libcurl&quot;),
                         stringsAsFactors = FALSE)</code></pre>
@@ -224,12 +226,12 @@ library(dplyr)</code></pre>
 ## 4    SSE 1889       0     182   11   92    0 285             
 ## 5    SSE 1890       0     251   42    0    0 292             
 ## 6    SSE 1891       0     274   24    0    0 298</code></pre>
-<pre class="r"><code>catch_cleaned&lt;- catch_df %&gt;%
+<pre class="r"><code>catch_long&lt;- catch_df %&gt;%
   select(Region, Year, Chinook, Sockeye, Coho, Pink, Chum) %&gt;% 
   gather(key = &quot;Species&quot;, value = &quot;Catch&quot;, Chinook, Sockeye, Coho, Pink, Chum)
   
 
-head(catch_cleaned)</code></pre>
+head(catch_long)</code></pre>
 <pre><code>##   Region Year Species Catch
 ## 1    SSE 1886 Chinook     0
 ## 2    SSE 1887 Chinook     0
@@ -237,6 +239,26 @@ head(catch_cleaned)</code></pre>
 ## 4    SSE 1889 Chinook     0
 ## 5    SSE 1890 Chinook     0
 ## 6    SSE 1891 Chinook     0</code></pre>
+<pre class="r"><code>catch_cleaned&lt;-catch_long %&gt;% 
+  rename(catch_thousands = Catch) # %&gt;% 
+  #mutate
+  
+
+head(catch_cleaned)</code></pre>
+<pre><code>##   Region Year Species catch_thousands
+## 1    SSE 1886 Chinook               0
+## 2    SSE 1887 Chinook               0
+## 3    SSE 1888 Chinook               0
+## 4    SSE 1889 Chinook               0
+## 5    SSE 1890 Chinook               0
+## 6    SSE 1891 Chinook               0</code></pre>
+<pre class="r"><code>test_catch &lt;- as.integer(catch_cleaned$catch_thousands)</code></pre>
+<pre><code>## Warning: NAs introduced by coercion</code></pre>
+<pre class="r"><code>i&lt;- which(is.na(test_catch) == T)
+
+catch_cleaned[i, ]</code></pre>
+<pre><code>##     Region Year Species catch_thousands
+## 401    GSE 1955 Chinook               I</code></pre>
 </div>
 </div>
 <div id="split-apply-combine" class="section level1">
