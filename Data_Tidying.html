@@ -228,44 +228,117 @@ library(dplyr)</code></pre>
 ## 6    SSE 1891       0     274   24    0    0 298</code></pre>
 <pre class="r"><code>catch_long&lt;- catch_df %&gt;%
   select(Region, Year, Chinook, Sockeye, Coho, Pink, Chum) %&gt;% 
-  gather(key = &quot;Species&quot;, value = &quot;Catch&quot;, Chinook, Sockeye, Coho, Pink, Chum)
+  gather(key = &quot;Species&quot;, value = &quot;catch&quot;, Chinook, Sockeye, Coho, Pink, Chum)
   
 
 head(catch_long)</code></pre>
-<pre><code>##   Region Year Species Catch
+<pre><code>##   Region Year Species catch
 ## 1    SSE 1886 Chinook     0
 ## 2    SSE 1887 Chinook     0
 ## 3    SSE 1888 Chinook     0
 ## 4    SSE 1889 Chinook     0
 ## 5    SSE 1890 Chinook     0
 ## 6    SSE 1891 Chinook     0</code></pre>
+<p>8erroneus value due to OCR issue - Change “I” to one *create catch column in correct units</p>
 <pre class="r"><code>catch_cleaned&lt;-catch_long %&gt;% 
-  rename(catch_thousands = Catch) # %&gt;% 
-  #mutate
-  
+  rename(catch_thousands = catch)  %&gt;% 
+  mutate(catch_thousands = ifelse(catch_thousands == &quot;I&quot;, 1, catch_thousands)) %&gt;% 
+  mutate(catch_thousands = as.integer(catch_thousands)) %&gt;% 
+  mutate(catch = catch_thousands * as.integer(1000))
 
-head(catch_cleaned)</code></pre>
-<pre><code>##   Region Year Species catch_thousands
-## 1    SSE 1886 Chinook               0
-## 2    SSE 1887 Chinook               0
-## 3    SSE 1888 Chinook               0
-## 4    SSE 1889 Chinook               0
-## 5    SSE 1890 Chinook               0
-## 6    SSE 1891 Chinook               0</code></pre>
-<pre class="r"><code>test_catch &lt;- as.integer(catch_cleaned$catch_thousands)</code></pre>
-<pre><code>## Warning: NAs introduced by coercion</code></pre>
-<pre class="r"><code>i&lt;- which(is.na(test_catch) == T)
-
-catch_cleaned[i, ]</code></pre>
-<pre><code>##     Region Year Species catch_thousands
-## 401    GSE 1955 Chinook               I</code></pre>
+tail(catch_cleaned)</code></pre>
+<pre><code>##      Region Year Species catch_thousands  catch
+## 8535    NOP 1992    Chum             342 342000
+## 8536    NOP 1993    Chum             135 135000
+## 8537    NOP 1994    Chum              84  84000
+## 8538    NOP 1995    Chum              99  99000
+## 8539    NOP 1996    Chum              68  68000
+## 8540    NOP 1997    Chum              97  97000</code></pre>
 </div>
 </div>
 <div id="split-apply-combine" class="section level1">
 <h1>Split-Apply-Combine</h1>
+<p>Calulculate total catch by region</p>
+<pre class="r"><code>catch_total &lt;- catch_cleaned %&gt;% 
+  group_by(Year, Species) %&gt;% 
+  summarize(&quot;Mean Regional Catch&quot; = as.integer(sum(catch)))
+            #n_obs = n()
+
+catch_total</code></pre>
+<pre><code>## # A tibble: 600 x 3
+## # Groups:   Year [?]
+##     Year Species `Mean Regional Catch`
+##    &lt;int&gt; &lt;chr&gt;                   &lt;int&gt;
+##  1  1878 Chinook                     0
+##  2  1878 Chum                        0
+##  3  1878 Coho                        0
+##  4  1878 Pink                        0
+##  5  1878 Sockeye                     0
+##  6  1879 Chinook                     0
+##  7  1879 Chum                        0
+##  8  1879 Coho                        0
+##  9  1879 Pink                        0
+## 10  1879 Sockeye                     0
+## # ... with 590 more rows</code></pre>
+</div>
+<div id="filter" class="section level1">
+<h1>Filter</h1>
+<p>Filter for Chinook Salmon. GOOD FOR SORTING OUT YEARS</p>
+<pre class="r"><code>catch_chinook &lt;- catch_cleaned %&gt;% 
+  filter(Species == &quot;Chinook&quot; &amp; Region == &quot;SSE&quot; &amp; Year &gt; 1990) %&gt;% 
+  arrange(-Year) # negative = decending order, pos = ascending order
+
+head(catch_chinook)</code></pre>
+<pre><code>##   Region Year Species catch_thousands catch
+## 1    SSE 1997 Chinook              38 38000
+## 2    SSE 1996 Chinook              24 24000
+## 3    SSE 1995 Chinook              32 32000
+## 4    SSE 1994 Chinook              56 56000
+## 5    SSE 1993 Chinook              98 98000
+## 6    SSE 1992 Chinook              88 88000</code></pre>
 </div>
 <div id="joins" class="section level1">
 <h1>Joins</h1>
+<p>Read in the region file <code>region_defs</code> to jon with the previous original file called <code>catch_df</code></p>
+<pre class="r"><code>region_defs&lt;- read.csv(url(&quot;https://knb.ecoinformatics.org/knb/d1/mn/v2/object/df35b.303.1&quot;, 
+                        method = &quot;libcurl&quot;),
+                        stringsAsFactors = FALSE)
+head(region_defs)</code></pre>
+<pre><code>##      code                                  mgmtArea areaClass regionCode
+## 1     GSE              Unallocated Southeast Alaska  mgmtArea          1
+## 2     NSE                 Northern Southeast Alaska  mgmtArea          1
+## 3     SSE                 Southern Southeast Alaska  mgmtArea          1
+## 4     YAK                                   Yakutat  mgmtArea          1
+## 5 PWSmgmt      Prince William Sound Management Area  mgmtArea          2
+## 6     BER Bering River Subarea Copper River Subarea   subarea          2
+##                                                                                                                                                                                     notes
+## 1                                                            Included are Southeastern Alaska catches which could not be assigned\nto Northern or Southern Southeastern Alaska or Yakutat
+## 2 Northern Southern Alaska includes Districts 9 through 16 from summer straight northwest to and including the fairweather Grounds but excludes Yakutat fisheries unless otherwise noted.
+## 3                                                                                                                                                                                        
+## 4                                                                                                                                                                                        
+## 5                                                                                                            Includes the Bering River and Copper River and Prince William Sound Subareas
+## 6</code></pre>
+<pre class="r"><code>region_clean &lt;- region_defs %&gt;% 
+  select(code, mgmtArea)
+
+head(region_clean)</code></pre>
+<pre><code>##      code                                  mgmtArea
+## 1     GSE              Unallocated Southeast Alaska
+## 2     NSE                 Northern Southeast Alaska
+## 3     SSE                 Southern Southeast Alaska
+## 4     YAK                                   Yakutat
+## 5 PWSmgmt      Prince William Sound Management Area
+## 6     BER Bering River Subarea Copper River Subarea</code></pre>
+<pre class="r"><code>catch_joined &lt;- left_join(catch_cleaned, region_clean, by = c(&quot;Region&quot; = &quot;code&quot;))
+
+head(catch_joined)</code></pre>
+<pre><code>##   Region Year Species catch_thousands catch                  mgmtArea
+## 1    SSE 1886 Chinook               0     0 Southern Southeast Alaska
+## 2    SSE 1887 Chinook               0     0 Southern Southeast Alaska
+## 3    SSE 1888 Chinook               0     0 Southern Southeast Alaska
+## 4    SSE 1889 Chinook               0     0 Southern Southeast Alaska
+## 5    SSE 1890 Chinook               0     0 Southern Southeast Alaska
+## 6    SSE 1891 Chinook               0     0 Southern Southeast Alaska</code></pre>
 </div>
 
 

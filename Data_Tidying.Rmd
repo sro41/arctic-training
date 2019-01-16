@@ -3,8 +3,8 @@ title: "Data Tidying"
 author: "Shayne O'Brien"
 date: "January 16, 2019"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -73,12 +73,43 @@ Calulculate total catch by region
 
 ```{r}
 catch_total <- catch_cleaned %>% 
-  group_by(Region) %>% 
-  summarize(catch_region = mean(catch))
-            #n_obs = n())
+  group_by(Year, Species) %>% 
+  summarize("Mean Regional Catch" = as.integer(sum(catch)))
+            #n_obs = n()
 
 catch_total
 ```
+#Filter
+Filter for Chinook Salmon. GOOD FOR SORTING OUT YEARS
+```{r}
+catch_chinook <- catch_cleaned %>% 
+  filter(Species == "Chinook" & Region == "SSE" & Year > 1990) %>% 
+  arrange(-Year) # negative = decending order, pos = ascending order
 
+head(catch_chinook)
+```
 
 # Joins
+Read in the region file `region_defs` to jon with the previous original file called `catch_df`
+```{r}
+region_defs<- read.csv(url("https://knb.ecoinformatics.org/knb/d1/mn/v2/object/df35b.303.1", 
+                        method = "libcurl"),
+                        stringsAsFactors = FALSE)
+head(region_defs)
+```
+
+```{r}
+region_clean <- region_defs %>% 
+  select(code, mgmtArea)
+
+head(region_clean)
+```
+```{r}
+catch_joined <- left_join(catch_cleaned, region_clean, by = c("Region" = "code"))
+
+head(catch_joined)
+```
+
+
+
+
