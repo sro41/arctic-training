@@ -8,6 +8,6 @@ This repository is used as:
 
 # Credits  
 
-Thanks to all of our haters.
+Thanks to all of our haters, snakes and losers.
 
 Adios.
