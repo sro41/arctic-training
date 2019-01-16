@@ -109,6 +109,16 @@ catch_joined <- left_join(catch_cleaned, region_clean, by = c("Region" = "code")
 
 head(catch_joined)
 ```
+## Spread
+Turning long format (tidy) into wide format, for the purpose of creating a visual table
+```{r}
+catch_wide <- catch_cleaned %>% 
+  filter(Year>1990) %>% 
+  select (-catch_thousands) %>% 
+  spread(key = Year, value = catch)
+
+head(catch_wide)
+```
 
 
 

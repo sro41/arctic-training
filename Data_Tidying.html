@@ -339,6 +339,23 @@ head(catch_joined)</code></pre>
 ## 4    SSE 1889 Chinook               0     0 Southern Southeast Alaska
 ## 5    SSE 1890 Chinook               0     0 Southern Southeast Alaska
 ## 6    SSE 1891 Chinook               0     0 Southern Southeast Alaska</code></pre>
+<div id="spread" class="section level2">
+<h2>Spread</h2>
+<p>Turning long format (tidy) into wide format, for the purpose of creating a visual table</p>
+<pre class="r"><code>catch_wide &lt;- catch_cleaned %&gt;% 
+  filter(Year&gt;1990) %&gt;% 
+  select (-catch_thousands) %&gt;% 
+  spread(key = Year, value = catch)
+
+head(catch_wide)</code></pre>
+<pre><code>##   Region Species 1991   1992 1993   1994 1995 1996 1997
+## 1    ALU Chinook    0      0    0      0    0    0    0
+## 2    ALU    Chum    0   2000 1000   1000    0    0    0
+## 3    ALU    Coho    0      0    0      0    0    0    0
+## 4    ALU    Pink    0 320000    0 860000    0    0    0
+## 5    ALU Sockeye 1000   3000    0      0    0    0    0
+## 6    BER Chinook    0      0    0      0    0    0    0</code></pre>
+</div>
 </div>
 
 
