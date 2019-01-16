@@ -15,17 +15,40 @@ library(dplyr)
 ```
 To call a funtion from a specific package 'package_name::function_name(...) This is in the case of overlap in objects per the above error message
 
+To Hide, use `{r, warning= FALSE, message = False}`
+
 # Data Cleaning
+## Pipe Operator (`%>%`)
+  The Pipe Operator effieciently chains operations together.
+  
+Use:
+[Ctrl+Shift+M]
+
+```
+## Practice
 ```{r}
 catch_df<- read.csv(url("https://knb.ecoinformatics.org/knb/d1/mn/v2/object/df35b.302.1", 
                         method = "libcurl"),
                         stringsAsFactors = FALSE)
-head(catch_df)
 ```
-
 The above code allows reading in data from a url. `read.csv(file =)` sometimes doesnt work on windows, the above code fixes the error.
 
 `libcurl` forces the default library to make a connection with an https:// URL. Dependent on operating system.
+```{r}
+head(catch_df)
+```
+
+```{r}
+catch_cleaned<- catch_df %>%
+  select(Region, Year, Chinook, Sockeye, Coho, Pink, Chum) %>% 
+  gather(key = "Species", value = "Catch", Chinook, Sockeye, Coho, Pink, Chum)
+  
+
+head(catch_cleaned)
+```
+
+
+
 
 # Split-Apply-Combine
 
