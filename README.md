@@ -10,4 +10,4 @@ This repository is used as:
 
 Thanks to all of our fans.
 
-Goodbye.
+Adios.
