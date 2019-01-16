@@ -109,7 +109,7 @@ catch_joined <- left_join(catch_cleaned, region_clean, by = c("Region" = "code")
 
 head(catch_joined)
 ```
-## Spread
+# Spread
 Turning long format (tidy) into wide format, for the purpose of creating a visual table
 ```{r}
 catch_wide <- catch_cleaned %>% 
@@ -119,6 +119,29 @@ catch_wide <- catch_cleaned %>%
 
 head(catch_wide)
 ```
+# Seperate and Unite 
+```{r}
+dates_df <- data.frame(date = c("5/24/1930",
+                                "5/25/1930",
+                                "5/26/1930",
+                                "5/27/1930",
+                                "5/28/1930"),
+                       stringsAsFactors = FALSE)
+dates_df
+```
+```{r}
+dates_sep <- dates_df %>%
+separate(col = date, into = c("month", "day", "year"))
+
+head(dates_sep)
+```
+```{r}
+dates_unite <- dates_sep %>% 
+  unite(date_iso, year, month, day, sep = "-")
+
+head(dates_unite)
+```
+
 
 
 
