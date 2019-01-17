@@ -14,6 +14,7 @@ library(tidyr)
 library(ggplot2)
 library(dplyr)
 library(DT)
+library(leaflet)
 
 ```
 # Data Tidying
@@ -55,6 +56,7 @@ datatable(annual_esc)
 ggplot(data = annual_esc, mapping = aes(x = Species, y = escapement, fill = SASAP.Region)) +
   geom_col() #This is the geometry
 ```
+
 * ggplot requires adding the geometry of the plot in order for data to populate
   +`ggplot(data = annual_esc, mapping = aes(x = Species, y = escapement))` `+`
   `eom_col()`
@@ -102,5 +104,29 @@ ggsave("figures/region_escapement.png",
        units = "in")
 ```
 
+```{r}
+write.csv(annual_esc,
+          "derived_data/annual_escapement.csv",
+          row.names = F)
+```
 
+# Interactive Map!
+
+Make a map using leaflet
+
+* find unique locations with lat/long values
+
+```{r}
+locations <- esc %>% 
+  distinct(Location, Latitude, Longitude) %>% 
+  drop_na()
+
+datatable(locations)
+```
+
+```{r}
+leaflet(locations) %>% 
+  addTiles() %>% 
+  addMarkers(~ Longitude, ~ Latitude, popup = ~Location)
+```
 
