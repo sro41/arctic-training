@@ -1,5 +1,5 @@
 ---
-title: "index"
+title: "Index"
 author: "Shayne O'Brien"
 date: "January 17, 2019"
 output: html_document
@@ -9,22 +9,45 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+```{r, warning=FALSE, message=FALSE}
+library(tidyr)
+library(ggplot2)
+library(dplyr)
+library(DT)
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+```
+# Data Tidying
+Read in data from Alaska Department of Fish and Game, Division of Commercial Fisheries. 2017. Daily salmon escapement counts from the OceanAK database, Alaska, 1921-2017. Knowledge Network for Biocomplexity. doi:10.5063/F1S46Q6M.
+```{r}
+esc <- read.csv("https://knb.ecoinformatics.org/knb/d1/mn/v2/object/urn%3Auuid%3Af119a05b-bbe7-4aea-93c6-85434dcb1c5e", stringsAsFactors = FALSE)
+```
+OR
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+```{r}
+esc <- read.csv(url("https://knb.ecoinformatics.org/knb/d1/mn/v2/object/urn%3Auuid%3Af119a05b-bbe7-4aea-93c6-85434dcb1c5e", method = "libcurl"),  stringsAsFactors = FALSE)
+```
+`stringsAsFactors` R can deal with text more efficiently using this. Assigns a numeric value to each element.
+`echo = False, results = False` will allow you to run early analysis in RMarkdown but not have it appear in final project.
 
-```{r cars}
-summary(cars)
+```{r}
+head(esc)
+```
+*`separate` the date into year - month - day
+*`group_by` `summarize` to calculate the sum over unique region - year - species combinations
+*`filter` for salmos species
+```{r}
+annual_esc <- esc %>% 
+  separate(sampleDate, into = c("year", "month", "day"), sep = "-") %>% 
+  mutate(year = as.numeric(year)) %>% 
+  group_by(SASAP.Region, Species, year) %>% 
+  summarise(escapement = sum(DailyCount)) %>% 
+  filter(Species %in% c("Chinook", "Sockeye", "Pink", "Chum", "Coho"))
+
+head (annual_esc)
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+datatable(annual_esc)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+# Static Plots w/ ggplot
