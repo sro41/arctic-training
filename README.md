@@ -11,3 +11,6 @@ This repository is used as:
 Thanks to all of our haters.  Haters gonna hate snakes and losers.
 
 Adios.
+
+install.packages("tinytex")
+tinytex::install_tinytex()
