@@ -1,5 +1,5 @@
 ---
-title: "Index"
+title: "GGPlot2"
 author: "Shayne O'Brien"
 date: "January 17, 2019"
 output: html_document
@@ -85,6 +85,22 @@ EX:
 `my_theme <- theme_bw()` `+`
   `theme(plot.title = element_text(hjust = 0.5))`
   
-  
+plot a timeseries of escapement by species for all regions
+```{r, fig.height = 10, fig.width = 6}
+plot_name<-ggplot(annual_esc, aes(x = year, y = escapement, color = Species)) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(~SASAP.Region, scales = "free", ncol = 2) +
+  theme_bw()
+
+plot_name
+
+ggsave("figures/region_escapement.png",
+       plot = plot_name,
+       height = 10,
+       width = 8,
+       units = "in")
+```
+
 
 
