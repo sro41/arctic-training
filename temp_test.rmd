@@ -12,6 +12,6 @@ knitr::opts_chunk$set(echo = TRUE)
 Source our utility functions and test them
 
 ```{r}
-source("fahr_to_celsius.R")
+source("fahr_to_cel.R")
 ```
 
