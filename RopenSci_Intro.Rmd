@@ -1,0 +1,71 @@
+---
+title: "ropensci_demo"
+author: "Shayne O'Brien"
+date: "January 18, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#rnoaa
+
+```{r}
+library(rnoaa)
+library(ncdf4)
+library(ggplot2)
+
+```
+
+?buoy
+
+```{r}
+bd <- buoy(dataset = "cwind", buoyid =46080, year = 2018, datatype = "c")
+```
+
+```{r}
+wind_speed <- data.frame(time = strptime(bd$data$time, format = "%Y-%m-%dT%TZ"), 
+                         speed = bd$data$wind_spd)
+                         
+```
+
+
+```{r}
+ggplot(wind_speed, aes (x=time, y=speed)) +
+  geom_point()
+```
+
+#Mapr
+
+```{r}
+install.packages("mapr", dependencies = TRUE)
+```
+
+
+```{r}
+library(mapr)
+library(spocc)
+
+```
+
+```{r}
+spp <- c("Ursus arctos", "Ursus maritimus")
+
+bears <- occ(query = spp,
+             from = "gbif",
+             has_coords = T,
+             limit = 500)
+map_leaflet(bears, color = c("brown", "gray"), size = 1)
+
+bats <- ("Myotis septentrionalis")
+
+batz <- occ(query = bats,
+             from = "gbif",
+             has_coords = T,
+             limit = 500)
+
+map_leaflet(batz, color = c("black"), size = 1)
+```
+
+
